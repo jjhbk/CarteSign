@@ -1,6 +1,6 @@
 // Define a function to convert  string to hex
 
-import { Bytes } from "ethers";
+/*import { Bytes } from "ethers";
 
 const stringToHex = (str: string) => {
   let hex = "";
@@ -43,4 +43,6 @@ const hexToBytes = (hex: string) => {
 
   return bytes;
 };
+
 export { stringToHex, hexToString, bytestoHex, hexToBytes };
+*/

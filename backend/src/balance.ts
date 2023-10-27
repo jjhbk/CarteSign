@@ -22,10 +22,10 @@ class Balance {
   list_erc721(): Map<Address, Set<bigint>> {
     return this._erc721;
   }
-  erc20_get(erc20: Address): bigint {
+  erc20_get(erc20: Address): bigint | undefined {
     return this._erc20.get(erc20);
   }
-  erc721_get(erc721: Address): Set<bigint> {
+  erc721_get(erc721: Address): Set<bigint> | undefined {
     return this._erc721.get(erc721);
   }
   ether_increase(amount: bigint): void {
@@ -58,7 +58,10 @@ class Balance {
       if (this._erc20.get(erc20) === undefined || !this._erc20.get) {
         this._erc20.set(erc20, BigInt(0));
       }
-      this._erc20.set(erc20, BigInt(this._erc20.get(erc20)) + BigInt(amount));
+      this._erc20.set(
+        erc20,
+        BigInt(<bigint>this._erc20.get(erc20)) + BigInt(amount)
+      );
       console.log("erc20 balance is ", this._erc20);
     } catch (e) {
       console.error(
@@ -85,7 +88,7 @@ class Balance {
       );
       return;
     }
-    this._erc20.set(erc20, BigInt(this._erc20.get(erc20) - amount));
+    this._erc20.set(erc20, BigInt(<bigint>this._erc20.get(erc20) - amount));
   }
   erc721_add(erc721: Address, token_id: bigint) {
     if (this._erc721.get(erc721) === undefined) {
@@ -95,7 +98,8 @@ class Balance {
     if (tokens) {
       tokens.add(token_id);
     } else {
-      this._erc721.get(erc721).add(token_id);
+      const set: any = this._erc721.get(erc721);
+      set.add(token_id);
     }
   }
   erc721_remove(erc721: Address, token_id: bigint) {

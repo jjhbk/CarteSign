@@ -73,8 +73,9 @@ class Wallet {
   private _ether_deposit_parse = (_payload: string): [Address, bigint] => {
     try {
       let input_data = [];
-      input_data[0] = ethers.utils.hexDataSlice(_payload, 0, 20);
-      input_data[1] = ethers.utils.hexDataSlice(_payload, 21, 53);
+
+      input_data[0] = ethers.dataSlice(_payload, 0, 20);
+      input_data[1] = ethers.dataSlice(_payload, 21, 53);
       if (!input_data[0]) {
         console.error("ether deposit unsuccessful");
         return ["0x0", BigInt(0)];
@@ -83,7 +84,7 @@ class Wallet {
       return [getAddress(input_data[0]), BigInt(input_data[1])];
     } catch (e) {
       console.error(e);
-      return [null, null];
+      return ["0x0", BigInt(0)];
     }
   };
   private _erc20_deposit_parse = (
@@ -91,14 +92,14 @@ class Wallet {
   ): [Address, Address, bigint] => {
     try {
       let input_data = [];
-      input_data[0] = ethers.utils.hexDataSlice(_payload, 0, 1);
-      input_data[1] = ethers.utils.hexDataSlice(_payload, 1, 21);
-      input_data[2] = ethers.utils.hexDataSlice(_payload, 21, 41);
-      input_data[3] = ethers.utils.hexDataSlice(_payload, 41, 63);
+      input_data[0] = ethers.dataSlice(_payload, 0, 1);
+      input_data[1] = ethers.dataSlice(_payload, 1, 21);
+      input_data[2] = ethers.dataSlice(_payload, 21, 41);
+      input_data[3] = ethers.dataSlice(_payload, 41, 63);
 
       if (!input_data[0]) {
-        console.error("ether deposit unsuccessful");
-        return [null, null, null];
+        console.error("erc20 deposit unsuccessful");
+        return ["0x0", "0x0", BigInt(0)];
       }
       return [
         getAddress(input_data[1]),
@@ -107,7 +108,7 @@ class Wallet {
       ];
     } catch (e) {
       console.error(e);
-      return [null, null, null];
+      return ["0x0", "0x0", BigInt(0)];
     }
   };
 
@@ -116,10 +117,14 @@ class Wallet {
   ): [Address, Address, bigint] => {
     try {
       let input_data = [];
-      input_data[0] = ethers.utils.hexDataSlice(_payload, 0, 20);
-      input_data[1] = ethers.utils.hexDataSlice(_payload, 21, 41);
-      input_data[2] = ethers.utils.hexDataSlice(_payload, 42, 64);
-      input_data[3] = ethers.utils.hexDataSlice(_payload, 65, 87);
+      input_data[0] = ethers.dataSlice(_payload, 0, 20);
+      input_data[1] = ethers.dataSlice(_payload, 21, 41);
+      input_data[2] = ethers.dataSlice(_payload, 42, 64);
+      input_data[3] = ethers.dataSlice(_payload, 65, 87);
+      if (!input_data[0]) {
+        console.error("erc721 deposit unsuccessful");
+        return ["0x0", "0x0", BigInt(0)];
+      }
       return [
         getAddress(input_data[0]),
         getAddress(input_data[1]),
@@ -127,7 +132,7 @@ class Wallet {
       ];
     } catch (e) {
       console.error(e);
-      return [null, null, null];
+      return ["0x0", "0x0", BigInt(0)];
     }
   };
 

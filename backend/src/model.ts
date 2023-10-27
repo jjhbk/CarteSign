@@ -17,10 +17,10 @@ class Item {
 }
 
 class Bid {
-  auction_id: number;
-  author: string;
-  amount: number;
-  timestamp: Date;
+  auction_id!: number;
+  author!: string;
+  amount!: number;
+  timestamp!: Date;
   constructor(
     auction_id: number,
     author: string,
@@ -146,9 +146,9 @@ class Auction {
   getMinbidamount() {
     return this.min_bid_amount;
   }
-  getWinning_bid(): Bid {
+  getWinning_bid(): Bid | undefined {
     if (this.bids.length === 0) {
-      return null;
+      return undefined;
     }
     return this.bids[this.bids.length - 1];
   }
@@ -168,15 +168,12 @@ class Auction {
         `Bid amount ${bid.amount} did not not meet minimum bid amount`
       );
     }
-    if (this.getWinning_bid() === null || bid._gt(this.getWinning_bid())) {
+    const winning_bid = this.getWinning_bid();
+    if (winning_bid === undefined || bid._gt(winning_bid)) {
       this.bids.push(bid);
     } else {
       throw new EvalError(
-        `bid amoujnt ${
-          bid.amount
-        } is not greater than the currnent winning bid amount ${
-          this.getWinning_bid().amount
-        } `
+        `bid amoujnt ${bid.amount} is not greater than the currnent winning bid amount ${winning_bid.amount} `
       );
     }
     if (this.state === Status.CREATED) {

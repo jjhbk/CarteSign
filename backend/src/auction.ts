@@ -165,7 +165,11 @@ class Auctioneer {
         if (typeof output === typeof Error_out) {
           return output;
         }
-        if (withdraw && msg_sender === auction.getWinning_bid().author) {
+        const winnig_bid = auction.getWinning_bid();
+        if (winnig_bid === undefined) {
+          return new Error_out("winning bid not defined");
+        }
+        if (withdraw && msg_sender === winnig_bid.author) {
           output = this.wallet.erc721_withdraw(
             getAddress(rollup_address),
             getAddress(msg_sender),
@@ -206,7 +210,10 @@ class Auctioneer {
     try {
       const balance = this.wallet.balance_get(getAddress(seller));
       const erc721_balance = balance.erc721_get(getAddress(item.erc721));
-      if (item.token_id in erc721_balance) {
+      if (erc721_balance === undefined) {
+        return false;
+      }
+      if (item.token_id in <Set<bigint>>erc721_balance) {
         return true;
       }
       return false;
@@ -226,7 +233,10 @@ class Auctioneer {
   has_enough_funds(erc20: string, bidder: string, amount: number) {
     let balance = this.wallet.balance_get(getAddress(bidder));
     let erc20_balance = balance.erc20_get(getAddress(erc20));
-    return amount <= erc20_balance;
+    if (erc20 === undefined) {
+      return false;
+    }
+    return BigInt(amount) <= <bigint>erc20_balance;
   }
 }
 

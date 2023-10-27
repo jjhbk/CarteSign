@@ -1,4 +1,3 @@
-import * as fs from "fs";
 import { hexToBytes, hexToString, stringToBytes, stringToHex } from "viem";
 import { Notice, Output, Voucher, Report, Error_out, Log } from "./outputs";
 import { Router } from "./router";
@@ -6,6 +5,10 @@ import { Wallet } from "./wallet";
 import { Auctioneer } from "./auction";
 import { request } from "http";
 import { NODATA } from "dns";
+import erc20_portal from "./deployments/localhost/ERC20Portal.json";
+import erc_721_portal from "./deployments/localhost/ERC721Portal.json";
+import dapp_address_relay from "./deployments/localhost/DAppAddressRelay.json";
+import ether_portal from "./deployments/localhost/EtherPortal.json";
 console.info("MarketPlace App Started");
 let rollup_address = "";
 const rollup_server: string = <string>process.env.ROLLUP_HTTP_SERVER_URL;
@@ -19,27 +22,6 @@ if (Network === undefined) {
   Network = "localhost";
 }
 
-console.info("Network is ", Network);
-const erc_20_portal_file = fs.readFileSync(
-  `./deployments/localhost/ERC20Portal.json`
-);
-const erc20_portal: any = JSON.parse(erc_20_portal_file.toString());
-
-const erc_721_portal_file = fs.readFileSync(
-  `./deployments/localhost/ERC721Portal.json`
-);
-const erc_721_portal: any = JSON.parse(erc_721_portal_file.toString());
-
-const dapp_address_relay_file = fs.readFileSync(
-  `./deployments/localhost/DAppAddressRelay.json`
-);
-
-const dapp_address_relay: any = JSON.parse(dapp_address_relay_file.toString());
-
-const ether_portal_file = fs.readFileSync(
-  "./deployments/localhost/EtherPortal.json"
-);
-const ether_portal: any = JSON.parse(ether_portal_file.toString());
 const router = new Router(auctioneer, wallet);
 const send_request = async (output: Output | Set<Output>) => {
   if (output instanceof Output) {
