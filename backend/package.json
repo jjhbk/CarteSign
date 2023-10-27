@@ -21,7 +21,7 @@
     "build": "run-s codegen compile",
     "codegen": "ts-node schema.ts",
     "compile": "tsc && esbuild ./src/dapp.ts --bundle --outfile=dist/index.js --platform=node --target=node20",
-    "start": "ROLLUP_HTTP_SERVER_URL=\"http://127.0.0.1:5004\" Network=\"localhost\"  node dist/index.js"
+    "start": "ROLLUP_HTTP_SERVER_URL=\"http://127.0.0.1:8080/host-runner\" Network=\"localhost\"  node dist/index.js"
   },
   "keywords": [
     "cartesi"

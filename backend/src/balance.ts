@@ -3,12 +3,12 @@ class Balance {
   private account: string;
   private ether: bigint;
   private _erc20: Map<Address, bigint>;
-  private _erc721: Map<Address, Set<bigint>>;
+  private _erc721: Map<Address, Set<number>>;
   constructor(
     account: string,
     ether: bigint,
     erc20: Map<Address, bigint>,
-    erc721: Map<Address, Set<bigint>>
+    erc721: Map<Address, Set<number>>
   ) {
     (this.account = account), (this._erc20 = erc20), (this._erc721 = erc721);
     this.ether = ether;
@@ -19,13 +19,13 @@ class Balance {
   list_erc20(): Map<Address, bigint> {
     return this._erc20;
   }
-  list_erc721(): Map<Address, Set<bigint>> {
+  list_erc721(): Map<Address, Set<number>> {
     return this._erc721;
   }
   erc20_get(erc20: Address): bigint | undefined {
     return this._erc20.get(erc20);
   }
-  erc721_get(erc721: Address): Set<bigint> | undefined {
+  erc721_get(erc721: Address): Set<number> | undefined {
     return this._erc721.get(erc721);
   }
   ether_increase(amount: bigint): void {
@@ -90,9 +90,9 @@ class Balance {
     }
     this._erc20.set(erc20, BigInt(<bigint>this._erc20.get(erc20) - amount));
   }
-  erc721_add(erc721: Address, token_id: bigint) {
+  erc721_add(erc721: Address, token_id: number) {
     if (this._erc721.get(erc721) === undefined) {
-      this._erc20.set(erc721, BigInt(0));
+      this._erc721.set(erc721, new Set());
     }
     let tokens = this._erc721.get(erc721);
     if (tokens) {
@@ -100,9 +100,10 @@ class Balance {
     } else {
       const set: any = this._erc721.get(erc721);
       set.add(token_id);
+      this._erc721.set(erc721, set);
     }
   }
-  erc721_remove(erc721: Address, token_id: bigint) {
+  erc721_remove(erc721: Address, token_id: number) {
     if (this._erc721.get(erc721) === undefined) {
       this._erc20.set(erc721, BigInt(0));
     }

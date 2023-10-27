@@ -160,7 +160,7 @@ class Auctioneer {
           getAddress(auction.creator),
           getAddress(winning_bid.author),
           getAddress(auction.item.erc721),
-          BigInt(auction.item.token_id)
+          auction.item.token_id
         );
         if (typeof output === typeof Error_out) {
           return output;
@@ -174,7 +174,7 @@ class Auctioneer {
             getAddress(rollup_address),
             getAddress(msg_sender),
             getAddress(auction.item.erc721),
-            BigInt(auction.item.token_id)
+            auction.item.token_id
           );
           if (typeof output === typeof Error_out) {
             return output;
@@ -213,7 +213,7 @@ class Auctioneer {
       if (erc721_balance === undefined) {
         return false;
       }
-      if (item.token_id in <Set<bigint>>erc721_balance) {
+      if (item.token_id in <Set<number>>erc721_balance) {
         return true;
       }
       return false;

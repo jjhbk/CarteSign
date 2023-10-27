@@ -9,6 +9,8 @@ import {
   hexToBytes,
   bytesToHex,
   parseAbiParameters,
+  hexToString,
+  parseEther,
 } from "viem";
 import { CartesiDappABI, erc20ABI, erc721ABI } from "./rollups";
 import { ethers } from "ethers";
@@ -75,13 +77,17 @@ class Wallet {
       let input_data = [];
 
       input_data[0] = ethers.dataSlice(_payload, 0, 20);
-      input_data[1] = ethers.dataSlice(_payload, 21, 53);
+      input_data[1] = ethers.dataSlice(_payload, 20, 52);
+
       if (!input_data[0]) {
         console.error("ether deposit unsuccessful");
         return ["0x0", BigInt(0)];
       }
       console.debug("input data is", input_data);
-      return [getAddress(input_data[0]), BigInt(input_data[1])];
+      return [
+        getAddress(input_data[0]),
+        parseEther(String(parseInt(input_data[1])), "gwei"),
+      ];
     } catch (e) {
       console.error(e);
       return ["0x0", BigInt(0)];
@@ -95,7 +101,7 @@ class Wallet {
       input_data[0] = ethers.dataSlice(_payload, 0, 1);
       input_data[1] = ethers.dataSlice(_payload, 1, 21);
       input_data[2] = ethers.dataSlice(_payload, 21, 41);
-      input_data[3] = ethers.dataSlice(_payload, 41, 63);
+      input_data[3] = ethers.dataSlice(_payload, 41, 73);
 
       if (!input_data[0]) {
         console.error("erc20 deposit unsuccessful");
@@ -105,6 +111,7 @@ class Wallet {
         getAddress(input_data[1]),
         getAddress(input_data[2]),
         BigInt(input_data[3]),
+        // parseEther(String(parseInt(input_data[3])), "gwei"),
       ];
     } catch (e) {
       console.error(e);
@@ -114,25 +121,25 @@ class Wallet {
 
   private _erc721_deposit_parse = (
     _payload: string
-  ): [Address, Address, bigint] => {
+  ): [Address, Address, number] => {
     try {
       let input_data = [];
       input_data[0] = ethers.dataSlice(_payload, 0, 20);
-      input_data[1] = ethers.dataSlice(_payload, 21, 41);
-      input_data[2] = ethers.dataSlice(_payload, 42, 64);
-      input_data[3] = ethers.dataSlice(_payload, 65, 87);
+      input_data[1] = ethers.dataSlice(_payload, 20, 40);
+      input_data[2] = ethers.dataSlice(_payload, 40, 72);
       if (!input_data[0]) {
         console.error("erc721 deposit unsuccessful");
-        return ["0x0", "0x0", BigInt(0)];
+        return ["0x0", "0x0", 0];
       }
+      console.log("input data is ", input_data);
       return [
         getAddress(input_data[0]),
         getAddress(input_data[1]),
-        BigInt(input_data[2]),
+        parseInt(input_data[2]),
       ];
     } catch (e) {
       console.error(e);
-      return ["0x0", "0x0", BigInt(0)];
+      return ["0x0", "0x0", 0];
     }
   };
 
@@ -172,7 +179,7 @@ class Wallet {
   private _erc721_deposit = (
     account: Address,
     erc721: Address,
-    token_id: bigint
+    token_id: number
   ) => {
     try {
       let balance = this._balance_get(account);
@@ -283,7 +290,7 @@ class Wallet {
     rollup_address: Address,
     sender: Address,
     erc721: Address,
-    token_id: bigint
+    token_id: number
   ) => {
     try {
       let balance = this._balance_get(sender);
@@ -306,7 +313,7 @@ class Wallet {
     account: Address,
     to: Address,
     erc721: Address,
-    token_id: bigint
+    token_id: number
   ) => {
     try {
       let balance = this._balance_get(account);

@@ -70,7 +70,7 @@ class BalanceRoute extends WalletRoute {
     console.log("request is ", request);
     const accbalance = this.wallet.balance_get(getAddress(request));
     console.log("complete balance is", accbalance);
-    return new Report(
+    /*   return new Report(
       JSON.stringify({
         ether: JSON.stringify(accbalance.ether_get(), (_, v) =>
           typeof v === "bigint" ? v.toString() : v
@@ -81,6 +81,30 @@ class BalanceRoute extends WalletRoute {
         erc721: JSON.stringify(accbalance.list_erc721(), (_, v) =>
           typeof v === "bigint" ? v.toString() : v
         ),
+      })
+    );
+  };*/
+    let erc20string = "";
+    for (let [token, balance] of accbalance.list_erc20()) {
+      erc20string = String(
+        erc20string + `{ token: ${token}, balance: ${balance.toString()} }`
+      );
+    }
+    let erc721string = "";
+    for (let [token, idset] of accbalance.list_erc721()) {
+      let substring = "";
+      for (let id of idset) {
+        substring = String(substring + id + ",");
+      }
+      erc721string = String(
+        erc721string + JSON.stringify({ token: token, idset: substring })
+      );
+    }
+    return new Report(
+      JSON.stringify({
+        ether: JSON.stringify(accbalance.ether_get().toString()),
+        erc20: erc20string,
+        erc721: erc721string,
       })
     );
   };
@@ -167,7 +191,7 @@ class WithdrawERC721Route extends WalletRoute {
       getAddress(this.rollup_address),
       getAddress(this.msg_sender),
       this.request_args.erc721.toLowerCase(),
-      BigInt(this.request_args.token_id)
+      this.request_args.token_id
     );
   };
 }
@@ -179,7 +203,7 @@ class TransferERC721Route extends WalletRoute {
       getAddress(this.msg_sender),
       this.request_args.to.toLowerCase(),
       this.request_args.erc721.toLowerCase(),
-      BigInt(this.request_args.token_id)
+      parseInt(this.request_args.token_id)
     );
   };
 }
