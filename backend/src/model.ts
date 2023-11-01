@@ -28,7 +28,7 @@ class Bid {
     timestamp: Date
   ) {
     if (amount <= 0) {
-      console.error(`Amount ${amount} must be greater than zero`);
+      throw new EvalError(`Amount ${amount} must be greater than zero`);
       return;
     }
     this.auction_id = auction_id;

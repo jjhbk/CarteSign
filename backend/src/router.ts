@@ -103,8 +103,8 @@ class BalanceRoute extends WalletRoute {
     return new Report(
       JSON.stringify({
         ether: JSON.stringify(accbalance.ether_get().toString()),
-        erc20: erc20string,
-        erc721: erc721string,
+        erc20: JSON.stringify(erc20string),
+        erc721: JSON.stringify(erc721string),
       })
     );
   };
@@ -141,7 +141,7 @@ class TransferEther extends WalletRoute {
     this.parse_request(request);
     return this.wallet.ether_transfer(
       getAddress(this.msg_sender),
-      this.request_args.to.toLowerCase(),
+      getAddress(this.request_args.to.toLowerCase()),
       BigInt(this.request_args.amount)
     );
   };
@@ -152,7 +152,7 @@ class WithdrawERC20Route extends WalletRoute {
     this.parse_request(request);
     return this.wallet.erc20_withdraw(
       getAddress(this.msg_sender),
-      this.request_args.erc20.toLowerCase(),
+      getAddress(this.request_args.erc20.toLowerCase()),
       BigInt(this.request_args.amount)
     );
   };
@@ -163,8 +163,8 @@ class TransferERC20Route extends WalletRoute {
     this.parse_request(request);
     return this.wallet.erc20_transfer(
       getAddress(this.msg_sender),
-      this.request_args.to.toLowerCase(),
-      this.request_args.erc20.toLowerCase(),
+      getAddress(this.request_args.to.toLowerCase()),
+      getAddress(this.request_args.erc20.toLowerCase()),
       BigInt(this.request_args.amount)
     );
   };
@@ -190,8 +190,8 @@ class WithdrawERC721Route extends WalletRoute {
     return this.wallet.erc721_withdraw(
       getAddress(this.rollup_address),
       getAddress(this.msg_sender),
-      this.request_args.erc721.toLowerCase(),
-      this.request_args.token_id
+      getAddress(this.request_args.erc721.toLowerCase()),
+      parseInt(this.request_args.token_id)
     );
   };
 }
@@ -201,8 +201,8 @@ class TransferERC721Route extends WalletRoute {
     this.parse_request(request);
     return this.wallet.erc721_transfer(
       getAddress(this.msg_sender),
-      this.request_args.to.toLowerCase(),
-      this.request_args.erc721.toLowerCase(),
+      getAddress(this.request_args.to.toLowerCase()),
+      getAddress(this.request_args.erc721.toLowerCase()),
       parseInt(this.request_args.token_id)
     );
   };
@@ -231,7 +231,7 @@ class CreateAuctionRoute extends AuctioneerRoute {
       this.request_args.erc20,
       this.request_args.title,
       this.request_args.description,
-      this.request_args.min_bid_amount,
+      parseInt(this.request_args.min_bid_amount),
       this.request_args.start_date,
       this.request_args.end_date,
       this.msg_timestamp
@@ -259,7 +259,7 @@ class EndAuctionRoute extends AuctioneerRoute {
       );
     }
     return this.auctioneer.auction_end(
-      this.request_args.auction_id,
+      parseInt(this.request_args.auction_id),
       this.rollup_address,
       this.msg_timestamp,
       this.msg_sender,
@@ -273,8 +273,8 @@ class PlaceBidRoute extends AuctioneerRoute {
     this.parse_request(request);
     return this.auctioneer.auction_bid(
       this.msg_sender,
-      this.request_args.auction_id,
-      this.request_args.amount,
+      parseInt(this.request_args.auction_id),
+      parseInt(this.request_args.amount),
       this.msg_timestamp
     );
   };

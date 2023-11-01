@@ -30,32 +30,35 @@ class Balance {
   }
   ether_increase(amount: bigint): void {
     if (amount < 0) {
-      console.error(`failed to increase balance of ether for ${this.account}`);
+      throw new EvalError(
+        `failed to increase balance of ether for ${this.account}`
+      );
       return;
     }
     this.ether = this.ether + amount;
   }
   ether_decrease(amount: bigint): void {
     if (amount < 0) {
-      console.error(`failed to decrease balance of ether for ${this.account}`);
-      return;
+      throw new EvalError(
+        `failed to decrease balance of ether for ${this.account}`
+      );
     }
 
     if (this.ether < amount) {
-      console.error(`failed to decrease balancefor ${this.account}`);
+      throw new EvalError(`failed to decrease balancefor ${this.account}`);
       return;
     }
     this.ether = this.ether - amount;
   }
   erc20_increase(erc20: Address, amount: bigint): void {
     if (amount < 0) {
-      console.error(
+      throw new EvalError(
         `failed to increase balance of ${erc20} for ${this.account}`
       );
       return;
     }
     try {
-      if (this._erc20.get(erc20) === undefined || !this._erc20.get) {
+      if (this._erc20.get(erc20) === undefined) {
         this._erc20.set(erc20, BigInt(0));
       }
       this._erc20.set(
@@ -64,29 +67,28 @@ class Balance {
       );
       console.log("erc20 balance is ", this._erc20);
     } catch (e) {
-      console.error(
-        console.error(
-          `failed to increase balance of ${erc20} for ${this.account} ${e}`
-        )
+      throw new EvalError(
+        `failed to increase balance of ${erc20} for ${this.account} ${e}`
       );
     }
   }
   erc20_decrease(erc20: Address, amount: bigint): void {
     if (amount < 0) {
-      console.error(
-        `failed to decrease balance of ${erc20} for ${this.account}`
+      throw new EvalError(
+        `failed to decrease balance of ${erc20} for ${this.account} invalid amount specified`
       );
-      return;
     }
     if (this._erc20.get(erc20) === undefined) {
       this._erc20.set(erc20, BigInt(0));
+      throw new EvalError(
+        `failed to decrease balance of ${erc20} for ${this.account} not found with erc20 balance`
+      );
     }
     let erc20_balance = <bigint>this._erc20.get(erc20);
     if (erc20_balance < amount) {
-      console.error(
-        `failed to decrease balance of ${erc20} for ${this.account}`
+      throw new EvalError(
+        `failed to decrease balance of ${erc20} for ${this.account} insufficient erc20 balance`
       );
-      return;
     }
     this._erc20.set(erc20, BigInt(<bigint>this._erc20.get(erc20) - amount));
   }
@@ -106,14 +108,18 @@ class Balance {
   erc721_remove(erc721: Address, token_id: number) {
     if (this._erc721.get(erc721) === undefined) {
       this._erc20.set(erc721, BigInt(0));
+      throw new EvalError(
+        `failed to remove token ${erc721}, id:${token_id} from ${this.account}`
+      );
+      return;
     }
     let tokens = this._erc721.get(erc721);
 
     try {
       tokens?.delete(token_id);
     } catch (e) {
-      console.error(
-        `failsed to remove token ${erc721}, id:${token_id} from ${this.account}`
+      throw new EvalError(
+        `failed to remove token ${erc721}, id:${token_id} from ${this.account}`
       );
     }
   }

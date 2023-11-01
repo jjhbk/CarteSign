@@ -80,7 +80,7 @@ class Wallet {
       input_data[1] = ethers.dataSlice(_payload, 20, 52);
 
       if (!input_data[0]) {
-        console.error("ether deposit unsuccessful");
+        throw new EvalError("ether deposit unsuccessful");
         return ["0x0", BigInt(0)];
       }
       console.debug("input data is", input_data);
@@ -89,7 +89,7 @@ class Wallet {
         parseEther(String(parseInt(input_data[1])), "gwei"),
       ];
     } catch (e) {
-      console.error(e);
+      throw new EvalError(String(e));
       return ["0x0", BigInt(0)];
     }
   };
@@ -104,7 +104,7 @@ class Wallet {
       input_data[3] = ethers.dataSlice(_payload, 41, 73);
 
       if (!input_data[0]) {
-        console.error("erc20 deposit unsuccessful");
+        throw new EvalError("erc20 deposit unsuccessful");
         return ["0x0", "0x0", BigInt(0)];
       }
       return [
@@ -114,7 +114,7 @@ class Wallet {
         // parseEther(String(parseInt(input_data[3])), "gwei"),
       ];
     } catch (e) {
-      console.error(e);
+      throw new EvalError(String(e));
       return ["0x0", "0x0", BigInt(0)];
     }
   };
@@ -128,7 +128,7 @@ class Wallet {
       input_data[1] = ethers.dataSlice(_payload, 20, 40);
       input_data[2] = ethers.dataSlice(_payload, 40, 72);
       if (!input_data[0]) {
-        console.error("erc721 deposit unsuccessful");
+        throw new EvalError("erc721 deposit unsuccessful");
         return ["0x0", "0x0", 0];
       }
       console.log("input data is ", input_data);
@@ -138,7 +138,7 @@ class Wallet {
         parseInt(input_data[2]),
       ];
     } catch (e) {
-      console.error(e);
+      throw new EvalError(String(e));
       return ["0x0", "0x0", 0];
     }
   };
