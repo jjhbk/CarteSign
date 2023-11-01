@@ -70,24 +70,56 @@ class BalanceRoute extends WalletRoute {
     console.log("request is ", request);
     const accbalance = this.wallet.balance_get(getAddress(request));
     console.log("complete balance is", accbalance);
-    /*   return new Report(
+    try {
+      const ether = accbalance.ether_get().toString();
+      const erc20: Map<`0x${string}`, any> = accbalance.list_erc20();
+      let erc20new = new Map();
+      let erc721new = new Map();
+      const erc721: any = accbalance.list_erc721();
+      for (let [key, value] of erc20) {
+        erc20new.set(key, value.toString());
+      }
+      console.log(ether, erc20, erc721);
+      for (let [key, value] of erc721) {
+        erc721new.set(key, Array.from(value));
+      }
+      return new Report(
+        JSON.stringify({
+          ether: ether,
+          erc20: Array.from(erc20new),
+          erc721: Array.from(erc721new),
+        })
+      );
+    } catch (e) {
+      return new Error_out(String(e));
+    }
+    /*return new Report(
       JSON.stringify({
         ether: JSON.stringify(accbalance.ether_get(), (_, v) =>
           typeof v === "bigint" ? v.toString() : v
         ),
-        erc20: JSON.stringify(accbalance.list_erc20(), (_, v) =>
-          typeof v === "bigint" ? v.toString() : v
-        ),
-        erc721: JSON.stringify(accbalance.list_erc721(), (_, v) =>
-          typeof v === "bigint" ? v.toString() : v
-        ),
+        erc20: JSON.stringify(accbalance.list_erc20(), (_, v) => {
+          JSON.stringify(v, (_, v1) => {
+            typeof v === "bigint" ? v1.toString() : v;
+          });
+        }),
+        erc721: JSON.stringify(accbalance.list_erc721(), (_, v) => {
+          JSON.stringify(v, (_, v1) => {
+            JSON.stringify(v1, (_, v2) => {
+              typeof v === "bigint" ? v2.toString() : v;
+            });
+          });
+        }),
       })
     );
   };*/
-    let erc20string = "";
+
+    /*  let erc20string = "";
     for (let [token, balance] of accbalance.list_erc20()) {
       erc20string = String(
-        erc20string + `{ token: ${token}, balance: ${balance.toString()} }`
+        erc20string +
+          `{ token: ${token}, balance: ${balance.toString()} }` +
+          ","
       );
     }
     let erc721string = "";
@@ -97,16 +129,17 @@ class BalanceRoute extends WalletRoute {
         substring = String(substring + id + ",");
       }
       erc721string = String(
-        erc721string + JSON.stringify({ token: token, idset: substring })
+        erc721string + `{ token: ${token}, idset: ${substring} }` + ","
       );
     }
     return new Report(
       JSON.stringify({
-        ether: JSON.stringify(accbalance.ether_get().toString()),
-        erc20: JSON.stringify(erc20string),
-        erc721: JSON.stringify(erc721string),
+        ether: accbalance.ether_get().toString(),
+        erc20: erc20string,
+        erc721: erc721string,
       })
     );
+  };*/
   };
 }
 
